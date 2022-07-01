@@ -28,13 +28,9 @@ The metadata collected with gait can be used to identify use of various types of
    * Timing: Normal TCP RTT, higher than expected TLS RTT
  * Layer 7 (HTTP Proxy)
    * Attributes: Potential mismatch between network stack fingerprint (OS of proxy) and HTTP fingerprints (Browser)
-      * TLS fingerprint depends whether TLS terminates at proxy or at browser
    * Timing: Higher than expected HTTP redirect/resource latency
 
+### License ###
 
-
-
-
-
-
+gait is licensed under BSD 3-clause, same as zeek
 
