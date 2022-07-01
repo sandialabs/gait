@@ -1,0 +1,5 @@
+[package]
+script_dir = zeek
+description = Adds fields to conn and ssl logs useful for fingeprinting and timing analysis
+tags = conn, tcp, ssl, fingerprinting
+version = 1.0.0
