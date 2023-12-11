@@ -54,25 +54,17 @@ redef record connection +=
 };
 
 redef record SSL::Info += 
-{
-    #from TCP conn log, duplicated for ease of comparison solely
-    tcp_handshake_duration: interval &optional  &log;
+{   
     #lowest full RTT found in TCP handshake, excludes calculated Hello delays. Requires C -> S -> C messages, 0-RTT doesn't have full RTT
     min_rtt:                interval &optional  &log;
     #Duration SSL handshake, until SSL established. Includes pre-SSL timestamp client Hello delay, if calculated
     #Only recorded if full handshake can be observed
     ssl_handshake_duration: interval &optional  &log;
-    #Number of trips packets take from C -> S or S -> C. Any transfer of SSL data in the opposite direction starts a new trip
-    #Last trip is not a full trip, trips recorded even if full handshake not recorded
-    ssl_handshake_trips:    count    &optional  &log;
-    #Some callbacks don't happen immedately, some callbacks occur with network timestamps much later than timestamps of packets
-    #Munging is detected when data in is opposite directions has same timestamp
-    time_munging:           bool     &default=F &log;
+    #Delta between tcp handshake duration and min_rtt for ssh
+    delta_rtt_tcp_ssl:           interval    &optional   &log;
     #Time between end of TCP connection and observation of Client Hello. Since this is traffic in same direction, this delta should be very low
     orig_hello_delay:       interval &optional  &log;
-    #Time between Server Hello and last SSL record in the same trip.
-    #This may be caused by time needed to do cryptographic functions, TCP window full, etc.
-    resp_hello_delay:       interval &optional  &log;
+
 };
 
 event ssl_plaintext_data(c: connection, is_orig: bool, record_version: count, content_type: count, length: count)
@@ -91,13 +83,7 @@ event ssl_plaintext_data(c: connection, is_orig: bool, record_version: count, co
             if (c?$tcp_handshake_duration)
             {
                 c$ssl$orig_hello_delay = network_time() - (c$start_time + c$tcp_handshake_duration);
-                c$ssl$tcp_handshake_duration = c$tcp_handshake_duration;
             }
-        }
-        
-        if (c$ssl_rtt$state == 1)
-        {
-            c$ssl$resp_hello_delay = c$ssl_rtt$current_end - c$ssl_rtt$current_start;
         }
         
         if (c$ssl_rtt$state >= 2)
@@ -109,34 +95,36 @@ event ssl_plaintext_data(c: connection, is_orig: bool, record_version: count, co
                 if (current_rtt < c$ssl$min_rtt)
                 {
                     c$ssl$min_rtt = current_rtt;
+                    if(c?$tcp_handshake_duration)
+                    {
+                        c$ssl$delta_rtt_tcp_ssl = c$ssl$min_rtt - c$tcp_handshake_duration;
+                    }
                 }
-            } else
+            } 
+            else
             {
                 c$ssl$min_rtt = current_rtt;
+                if(c?$tcp_handshake_duration)
+                {
+                    c$ssl$delta_rtt_tcp_ssl = c$ssl$min_rtt - c$tcp_handshake_duration;
+                }
             }
         }
         
         #transition state
         if (c$ssl_rtt?$current_end)
-        {
-            #check for munging right before state transition
-            if (c$ssl_rtt$current_end == network_time())
-            {
-                #print "Time/Callback Munging Detected--records in two directions with same timestamp";
-                c$ssl$time_munging = T;
-            }               
+        {            
             c$ssl_rtt$last_end = c$ssl_rtt$current_end;
         }
         c$ssl_rtt$current_start = network_time();
         c$ssl_rtt$current_end = network_time();
         c$ssl_rtt$state += 1;
-        c$ssl$ssl_handshake_trips = c$ssl_rtt$state;
+
     } else 
     {
         #another record in same direction/trip
         c$ssl_rtt$current_end = network_time();
     }
-    #print fmt("state: %d %s %-17s %-17s %d %d %s", c$ssl_rtt$state, is_orig, network_time(), c$start_time, c$orig$num_pkts, c$resp$num_pkts, c$id);
 }
 
 event ssl_established(c: connection)
