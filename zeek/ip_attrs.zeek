@@ -79,23 +79,23 @@ event new_connection(c: connection)
             c$orig_ttl = hdr$ip6$hlim;
         }
         #Comment line below to disable resp_ttl collection (expensive)
-        ConnThreshold::set_packets_threshold(c, 1, F);
+        #ConnThreshold::set_packets_threshold(c, 1, F);
     }
 }
 
 #Comment callback below to disable resp_ttl collection (expensive)
-event ConnThreshold::packets_threshold_crossed(c: connection, threshold: count, is_orig: bool)
-{
-    local hdr: raw_pkt_hdr;
-    hdr = get_current_packet_header();
-    if (hdr?$ip)
-    {
-        c$resp_ttl = hdr$ip$ttl;
-    } else if (hdr?$ip6)
-    {
-        c$resp_ttl = hdr$ip6$hlim;
-    }
-}
+#event ConnThreshold::packets_threshold_crossed(c: connection, threshold: count, is_orig: bool)
+#{
+#    local hdr: raw_pkt_hdr;
+#    hdr = get_current_packet_header();
+#    if (hdr?$ip)
+#    {
+#        c$resp_ttl = hdr$ip$ttl;
+#    } else if (hdr?$ip6)
+#    {
+#        c$resp_ttl = hdr$ip6$hlim;
+#    }
+#}
 
 #Uncomment to use without tcp_attr script
 #event connection_state_remove(c: connection)

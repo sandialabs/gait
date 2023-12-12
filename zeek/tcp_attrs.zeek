@@ -85,9 +85,7 @@ function tcp_options_kinds(): string
     if (hdr?$tcp && hdr$tcp$hl > 20)
     {
         pkt = get_current_packet();
-        
-        #get tcp header offset. There has to be better way?
-        
+
         #assume ethernet
         offset += 14;
         
@@ -111,7 +109,7 @@ function tcp_options_kinds(): string
         #check ports and cap_len
         local sport = bytestring_to_count(pkt$data[offset:offset+2],F);
         local dport = bytestring_to_count(pkt$data[offset+2:offset+4],F);
-        #print fmt("offset: %d, sport: %d, dport: %d", offset, sport, dport);
+
         opts_end = hdr$tcp$hl + offset;
         if (sport == port_to_count(hdr$tcp$sport) && dport == port_to_count(hdr$tcp$dport) && opts_end <= hdr$l2$cap_len)
         {
@@ -126,14 +124,13 @@ function tcp_options_kinds(): string
                     offset += bytestring_to_count(pkt$data[offset+1],F);
                 } else 
                 {
-                    #intentionally don't end processing if type is 0 (padding patterns/oddities useful for fingerprinting)
+                   #intentionally don't end processing if type is 0 (padding patterns/oddities useful for fingerprinting)
                     offset += 1;
                 }
             }               
         } else
         {
             #couldn't find tcp header, giving up, send back 255 indicating errror
-            #print fmt("couldn't find tcp header at offset: %d", offset);
             kinds += "255";
         }
     }

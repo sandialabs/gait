@@ -5,7 +5,7 @@ gait is a collection of zeek scripts that adds metadata to conn and ssl logs. Th
 gait collects two major types of metadata:
 
  * Attributes such as default TCP options which helps identify the software used by endpoints and intermediaries
- * Timing data such as TCP and TLS layer inferred round trip times (RTT) which helps understand path taken by traffic
+ * Timing data such as TCP TLS SSH layer inferred round trip times (RTT) which helps understand path taken by traffic
 
 ### Relationship to Other Software ###
  * zeek: gait is a zeek extension
@@ -26,9 +26,10 @@ The metadata collected with gait can be used to identify use of various types of
  * Layer 4 (SOCKS, tOR)
    * Attributes: Potential mismatch between network stack fingerprint (OS of exit node) and TLS/HTTP fingerprints (Browser)
    * Timing: Normal TCP RTT, higher than expected TLS RTT
- * Layer 7 (HTTP Proxy)
+ * Layer 7 (HTTP Proxy, SSH)
    * Attributes: Potential mismatch between network stack fingerprint (OS of proxy) and HTTP fingerprints (Browser)
    * Timing: Higher than expected HTTP redirect/resource latency
+   * SSH Timing: High than expected latency compared to tcp and authentication duration. 
 
 ### License ###
 

@@ -47,6 +47,7 @@ redef record connection +=
 
 event connection_first_ACK(c: connection)
 {
+    #Currently not accounting for TCP Fast open but will do so in future patches. 
     #check for "normal" tcp handshake (weeds out some connections where RTT can't be calculated accurately):
     if (c$orig$num_pkts == 1 && c$resp$num_pkts == 1 && c$history == "ShA")
     {
