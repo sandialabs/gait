@@ -1,3 +1,7 @@
+## Download: Gait is now officially apart of zkg!  ##
+https://github.com/zeek/packages/tree/master/sandialabs
+Make sure you have an updated version of zkg and you should be able to pull directly from zeek's package manager. 
+
 ## gait: Zeek Extension to Collect Metadata for Profiling of Endpoints and Proxies ##
 
 gait is a collection of zeek scripts that adds metadata to conn and ssl logs. This metadata supports profiling of endpoints and proxies. A core use case of gait is to counter malicious web clients that use deceptive infrastructure.
