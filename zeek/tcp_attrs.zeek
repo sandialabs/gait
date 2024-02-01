@@ -119,7 +119,7 @@ function tcp_options_kinds(): string
             {
                 kind = bytestring_to_count(pkt$data[offset],F);
                 kinds += cat(kind);
-                if (kind > 1 && offset + 1 < opts_end)
+                if (kind > 1 && offset + 1 < opts_end && bytestring_to_count(pkt$data[offset+1],F) != 0)
                 {
                     offset += bytestring_to_count(pkt$data[offset+1],F);
                 } else 
