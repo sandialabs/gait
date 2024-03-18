@@ -49,10 +49,7 @@ event connection_first_ACK(c: connection)
 {
     #Currently not accounting for TCP Fast open but will do so in future patches. 
     #check for "normal" tcp handshake (weeds out some connections where RTT can't be calculated accurately):
-    if (c$orig$num_pkts == 1 && c$resp$num_pkts == 1 && c$history == "ShA")
-    {
-        c$tcp_handshake_duration = network_time() - c$start_time;
-    }
+    c$tcp_handshake_duration = network_time() - c$start_time;
 }
 
 event connection_state_remove(c: connection)
