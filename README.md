@@ -31,6 +31,9 @@ The metadata collected with gait can be used to identify use of various types of
    * Timing: Normal TCP and TLS RTT, higher than expected HTTP RTT
 
 See included presentation for examples of use.
+
+Additional Examples: 
+https://www.osti.gov/biblio/2530825
   
 ### License ###
 
